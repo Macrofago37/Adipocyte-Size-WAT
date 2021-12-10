@@ -1,3 +1,6 @@
+//WAT Adipocyte size analysis
+//Luiz Felipe Martucci
+
 setBatchMode(true);
 run("Set Measurements...", "area area_fraction display add redirect=None decimal=2");
 run("Colors...", "foreground=white background=black selection=magenta");
@@ -49,8 +52,8 @@ open(path+name);
 og=getImageID();
 selectImage(segment);
 run("Adjustable Watershed");
-run("Create Selection");
 setBatchMode(true);
+run("Create Selection");
 roiManager("Add");
 selectImage(og);
 roiManager("Show All");
@@ -60,14 +63,27 @@ run("Select None");
 run("Synchronize Windows");
 setTool("line");
 run("Line Width...", "line=9");
-selectWindow("Synchronize Windows");
 waitForUser("Para corrigir a imagem", "Clicar em Sync All\nCorrigir a imagem com a linha:\n- Apertar DEL para remover bordas\n- Apertar F para desenhar bordas");
+selectWindow("Synchronize Windows");
 setBatchMode(true);
 selectImage(segment);
+rename(replace(title, ".tif", ""));
 close("\\Others");
 run("Convert to Mask");
 run("Invert");
-run("Analyze Particles...", "  show=Overlay display exclude clear");
-rename(replace(title, ".tif", "_Analyzed"));
 setBatchMode(false);
+//Se a imagem nao estiver calibrada remover pixel da proxima linha
+run("Analyze Particles...", "size=1-Infinity pixel show=Outlines display exclude clear add");
+rename(replace(title, ".tif", "")+"_Mask");
+close("\\Others");
+setBatchMode(true);
+open(path+name);
+rename(replace(title, ".tif", "")+"_Analyzed");
+closeimg=getTitle();
+roiManager("Show All");
+run("Flatten");
+roiManager("reset");
+close(closeimg);
+setBatchMode(false);
+
 
